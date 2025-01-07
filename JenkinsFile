@@ -36,8 +36,8 @@ pipeline {
             steps {
                 script {
                     container("kube"){
-                        sh '''kubectl apply -f deployment.yml
-                        kubectl apply -f service.yml'''
+                        sh "kubectl apply -f deployment.yml"
+                        sh "kubectl apply -f service.yml"
                     }
                 }
             }
