@@ -1,50 +1,18 @@
 pipeline {
-    agent any
-
-    environment {
-        IMAGE_NAME = "team-webapi:1.0"
-        DEPLOYMENT_NAME = "webapi-deployment"
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Cloning Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo/your-app.git'
+                git branch: 'main', credentialsId: 'myid', url: 'https://github.com/AlexisBozel/webapi.git'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Build image') {
             steps {
-                sh """
-                docker build -t ${IMAGE_NAME} .
-                """
+                script {
+                    container("docker"){
+                        docker.build("totank4545/st2dce-prj:latest")
+                    }
+                }
             }
-        }
-
-        stage('Load Image into Minikube') {
-            steps {
-                // Charger l'image dans le moteur Docker de Minikube
-                sh """
-                eval \$(minikube docker-env)
-                docker build -t ${IMAGE_NAME} .
-                """
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                // Appliquer les manifests Kubernetes
-                sh """
-                kubectl apply -f deployment.yaml
-                kubectl apply -f service.yaml
-                """
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline terminé. L'application est déployée sur Minikube."
         }
     }
 }
