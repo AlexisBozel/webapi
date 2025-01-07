@@ -17,5 +17,19 @@ pipeline {
                 }
             }
         }
+        stage('Pushing Image') {
+            environment {
+                registryCredential = 'totank4545'
+            }
+            steps {
+                script {
+                    container("docker"){
+                        docker.withRegistry('https://hregistry.ub.docker.com/', registryCredential){
+                            dockerImage.push("latest")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
