@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: st2dce
+  labels:
+    app: st2dce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: st2dce
+  template:
+    metadata:
+      labels:
+        app: st2dce
+    spec:
+      containers:
+      - name: st2dce
+        image: totank4545/st2dce-prj:latest
+        ports:
+        - containerPort: 8080
+        imagePullPolicy : Always
