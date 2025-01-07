@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "team-webapi:1.0"
+        DEPLOYMENT_NAME = "webapi-deployment"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo/your-app.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh """
+                docker build -t ${IMAGE_NAME} .
+                """
+            }
+        }
+
+        stage('Load Image into Minikube') {
+            steps {
+                // Charger l'image dans le moteur Docker de Minikube
+                sh """
+                eval \$(minikube docker-env)
+                docker build -t ${IMAGE_NAME} .
+                """
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Appliquer les manifests Kubernetes
+                sh """
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline terminé. L'application est déployée sur Minikube."
+        }
+    }
+}
