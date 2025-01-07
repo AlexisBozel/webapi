@@ -1,46 +1,49 @@
-def dockerImage = ""
 pipeline {
-    agent{
-        label 'agent1'
+
+  environment {
+    dockerimagename = "totank4545/st2dce-prj"
+    dockerImage = ""
+  }
+
+  agent any
+
+  stages {
+
+    stage('Checkout Source') {
+      steps {
+        git 'https://github.com/AlexisBozel/webapi.git'
+      }
     }
-    stages {
-        stage('Cloning Git') {
-            steps {
-                git branch: 'main', credentialsId: 'myid', url: 'https://github.com/AlexisBozel/webapi.git'
-            }
+
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build dockerimagename
         }
-        stage('Build Image') {
-            steps {
-                script {
-                    container("docker"){
-                        dockerImage = docker.build("totank4545/st2dce-prj:latest")
-                    }
-                }
-            }
-        }
-        stage('Pushing Image') {
-            environment {
-                registryCredential = 'dockerhublogin'
-            }
-            steps {
-                script {
-                    container("docker"){
-                        docker.withRegistry('https://registry.hub.docker.com/', registryCredential){
-                            dockerImage.push("latest")
-                        }
-                    }
-                }
-            }
-        }
-        stage('Deployment Image') {
-            steps {
-                script {
-                    container("kube"){
-                        sh "kubectl apply -f deployment.yml"
-                        sh "kubectl apply -f service.yml"
-                    }
-                }
-            }
-        }
+      }
     }
+
+    stage('Pushing Image') {
+      environment {
+               registryCredential = 'dockerhublogin'
+           }
+      steps{
+        script {
+          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
+            dockerImage.push("latest")
+          }
+        }
+      }
+    }
+
+    stage('Deploying to Kubernetes') {
+      steps {
+        script {
+          kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+        }
+      }
+    }
+
+  }
+
 }
