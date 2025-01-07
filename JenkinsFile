@@ -32,10 +32,13 @@ pipeline {
                 }
             }
         }
-        stage('Deployment image') {
+        stage('Deployment Image') {
             steps {
                 script {
-                    kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+                    container("kube"){
+                        sh '''kubectl apply -f deployment.yml
+                        kubectl apply -f service.yml'''
+                    }
                 }
             }
         }
