@@ -1,7 +1,7 @@
 def dockerImage = ""
 pipeline {
     agent{
-        label 'jenkins-jenkins-agent'
+        label 'agent1'
     }
     stages {
         stage('Cloning Git') {
