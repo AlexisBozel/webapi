@@ -1,4 +1,7 @@
 pipeline {
+    agent{
+        agent:'default'
+    }
     stages {
         stage('Cloning Git') {
             steps {
