@@ -9,7 +9,7 @@ pipeline {
                 git branch: 'main', credentialsId: 'myid', url: 'https://github.com/AlexisBozel/webapi.git'
             }
         }
-        stage('Build image') {
+        stage('Build Image') {
             steps {
                 script {
                     container("docker"){
@@ -32,7 +32,7 @@ pipeline {
                 }
             }
         }
-        stage('Build image') {
+        stage('Deployment image') {
             steps {
                 script {
                     kubernetesDeploy(configs: "deployment.yml", kubeconfigId: "kubernetes")
