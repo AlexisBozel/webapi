@@ -1,3 +1,4 @@
+def dockerImage = ""
 pipeline {
     agent{
         label 'jenkins-jenkins-agent'
@@ -12,14 +13,14 @@ pipeline {
             steps {
                 script {
                     container("docker"){
-                        docker.build("totank4545/st2dce-prj:latest")
+                        dockerImage = docker.build("totank4545/st2dce-prj:latest")
                     }
                 }
             }
         }
         stage('Pushing Image') {
             environment {
-                registryCredential = 'totank4545'
+                registryCredential = 'dockerhublogin'
             }
             steps {
                 script {
